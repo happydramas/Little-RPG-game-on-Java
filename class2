@@ -1,0 +1,32 @@
+package com.company;
+
+public class FightMonster {
+    static int mc, monster;
+
+    int monsterDamage;
+
+    public int getMc() {
+        return mc;
+    }
+    public void setMc(int mc) {
+        this.mc = mc;
+    }
+
+    public int getMonster() { return monster; }
+    public void setMonster(int monster) {
+        this.monster = monster;
+    }
+
+    public int getMonsterDamage() {
+        return monsterDamage;
+    }
+    public void setMonsterDamage(int monsterDamage) {
+        this.monsterDamage = monsterDamage;
+    }
+
+    public FightMonster(int mc, int monster, int monsterDamage) {
+        setMc(mc);
+        setMonster(monster);
+        setMonsterDamage(monsterDamage);
+    }
+}
