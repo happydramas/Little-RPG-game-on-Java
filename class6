@@ -1,0 +1,11 @@
+package com.company;
+
+public class WeaponKnife extends Weapon {
+    public WeaponKnife (int weaponDamage, String weaponStatus) {
+        super(weaponDamage, weaponStatus);
+    }
+
+    public void information() {
+        System.out.println("An ordinary knife, maybe useful for something.");
+    }
+}
