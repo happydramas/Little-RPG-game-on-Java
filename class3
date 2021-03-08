@@ -1,0 +1,27 @@
+package com.company;
+
+public abstract class Weapon {
+    public Weapon (int weaponDamage, String weaponStatus) {
+        setWeaponDamage(weaponDamage);
+        setWeaponStatus(weaponStatus);
+    }
+
+    private int weaponDamage;
+    private String weaponStatus;
+
+    public int getWeaponDamage() {
+        return weaponDamage;
+    }
+    public void setWeaponDamage(int weaponDamage) {
+        this.weaponDamage = weaponDamage;
+    }
+
+    public String getWeaponStatus() {
+        return weaponStatus;
+    }
+    public void setWeaponStatus(String weaponStatus) {
+        this.weaponStatus = weaponStatus;
+    }
+
+    public abstract void information();
+}
