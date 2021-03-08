@@ -1,0 +1,376 @@
+package com.company;
+
+import java.awt.image.AreaAveragingScaleFilter;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+import java.sql.*;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Connection connection = null; // connection for database
+        Statement statement = null;
+        ResultSet rs = null;
+
+        Scanner sc = new Scanner(System.in);
+        ConnectDB obj_ConnectDB = new ConnectDB();
+
+        connection = obj_ConnectDB.get_connection();
+
+        Menu menu = new Menu(); // our classes that we used in project
+        WeaponKnife wk = new WeaponKnife(10, "False");
+        FightMonster fm = new FightMonster(100, 200, 50);
+        WeaponSword ws = new WeaponSword(50, "False");
+        FightGoblin fg = new FightGoblin(100, 100, 25);
+
+        try {
+            PreparedStatement prst = connection.prepareStatement("INSERT INTO player_scoreboard(player_username, player_result) values (?, 'No')");
+            // prepared statement that we used in project
+            int userSelected; // what user selected
+
+            do {
+                userSelected = menu.MenuData(); // our menu that we created
+
+                if (userSelected == 1) { // starting the game
+                    System.out.println("Enter your username: "); // username for scoreboard
+                    String name = sc.nextLine();
+
+                    prst.setString(1, name); // using our prepared query
+                    prst.executeUpdate();
+
+                    System.out.println("The game is starting...");
+                    System.out.println(" ");
+
+                    System.out.println("You wake up in a strange cave.");
+                    System.out.println("You don’t remember anything and you don’t know who you are.");
+                    System.out.println("You have backpack in the back and there's blank sheet of paper, some potion and key.");
+                    System.out.println("There are two paths in front, which one will you choose?");
+
+                    System.out.println("1 - Go to the left");
+                    System.out.println("2 - Go to the right");
+
+                    int userSelected2 = sc.nextInt(); // two ways in our game
+
+                    if (userSelected2 == 1) {
+                        System.out.println("You went to the left.");
+                        System.out.println("It is dark in here, but still you can see something.");
+                        System.out.println("Going even further you find a knife.");
+                        System.out.println("Pick it up?");
+
+                        System.out.println("1 - Yes");
+                        System.out.println("2 - No");
+                        int userSelected3 = sc.nextInt();
+
+                        int weapon = 0; //
+
+                        if (userSelected3 == 1) {
+                            wk.information();
+                            wk.setWeaponStatus("True");
+                            String query = "UPDATE inventory SET item_status = 'True' where item_name = 'Knife'"; // if we pick up knife it is become true in inventory for sql
+                            weapon = 1;
+
+                            statement = connection.createStatement(); // query
+                            statement.executeUpdate(query);
+                        }
+                        else if (userSelected3 == 2) { // we didn't pick up knife
+                            weapon = 2;
+                            System.out.println("You decide not to pick up the knife.");
+                        }
+
+                        System.out.println(" ");
+                        System.out.println("You move on.");
+                        System.out.println("Going further you see a monster.");
+                        System.out.println("You do not understand what it is, so he will just remain as a monster.");
+                        System.out.println("What will you do?");
+
+                        System.out.println("1 - Fight!");
+                        System.out.println("2 - Run away");
+
+                        int userSelected4 = sc.nextInt();
+
+                        if (userSelected4 == 1) { // fight against monster
+                            System.out.println("You decided to fight monster.");
+                            System.out.println("");
+                        } else if (userSelected4 == 2) {
+                            System.out.println("You tried to run away.");
+                            System.out.println("But the turning path was already closed.");
+                            System.out.println("You started to fight.");
+                            System.out.println("");
+                        }
+                        if (weapon == 2) { // if we don't have any weapon we lost the fight automatically
+                            System.out.println("In fact, you don't have any weapons.");
+                            System.out.println("You don't stand a chance.");
+                            System.out.println("");
+                            System.out.println("GAME OVER!");
+
+                            String query2 = "UPDATE inventory SET item_status = 'False' where item_name = 'Knife'";
+
+                            statement = connection.createStatement();
+                            statement.executeUpdate(query2);
+
+                            System.exit(0);
+                        }
+                        else if (weapon == 1) { // in that case monster is too strong for us
+                            do {
+                                System.out.println("What you want to do?");
+
+                                System.out.println("1 - Attack");
+                                System.out.println("2 - Open inventory");
+
+                                int userSelected5 = sc.nextInt();
+
+                                if (userSelected5 == 1) {
+                                    System.out.println("You attacked monster with your knife.");
+                                    System.out.println("You dealt 10 damage to monster.");
+                                    fm.monster -= 10;
+                                    System.out.println("");
+                                    System.out.println("Monster attacks back.");
+                                    fm.mc -= fm.monsterDamage;
+                                }
+                                else if (userSelected5 == 2) {
+                                    System.out.println("Choose which item you want to use (TYPE ID).");
+
+                                    String query = "SELECT * FROM inventory WHERE item_status = 'True';";
+                                    statement = connection.createStatement();
+                                    rs = statement.executeQuery(query);
+
+                                    while (rs.next()) {
+                                        System.out.print(rs.getInt(1));
+                                        System.out.print(" ");
+                                        System.out.print(rs.getString(2));
+                                        System.out.println(" ");
+                                    }
+
+                                    int userSelected6 = sc.nextInt();
+
+                                    if (userSelected6 == 1) {
+                                        System.out.println("Still a blank sheet of paper.");
+                                        System.out.println("");
+                                        System.out.println("Monster attacks.");
+                                        fm.mc -= fm.monsterDamage;
+                                    }
+                                    else if (userSelected6 == 2) {
+                                        System.out.println("You used some strange potion.");
+                                        System.out.println("It healed you for 100 HP.");
+                                        fm.mc += 200;
+                                        System.out.println("");
+                                        System.out.println("Monster attacks.");
+                                        fm.mc -= fm.monsterDamage;
+                                    }
+                                    else if (userSelected6 == 3) {
+                                        System.out.println("Key.");
+                                        System.out.println("Nothing happened.");
+                                        System.out.println("");
+                                        System.out.println("Monster attacks.");
+                                        fm.mc -= fm.monsterDamage;
+                                    }
+                                    else if (userSelected6 == 4) {
+                                        System.out.println("It is knife that you found.");
+                                        System.out.println("You can attack with it.");
+                                        System.out.println("But not from inventory.");
+                                        System.out.println("");
+                                        System.out.println("Monster attacks.");
+                                        fm.mc -= fm.monsterDamage;
+                                    }
+                                }
+                            } while (fm.mc != 0);
+                            System.out.println("You died. GAME OVER!"); // when we die, our program ends
+
+                            String query2 = "UPDATE inventory SET item_status = 'False' where item_name = 'Knife'";
+
+                            statement = connection.createStatement();
+                            statement.executeUpdate(query2);
+
+                            System.exit(0);
+                        }
+                    } else if (userSelected2 == 2) {
+                        System.out.println("You went to right.");
+                        System.out.println("Going further, you find a staircase that leads up.");
+                        System.out.println("Climbing the stairs you find a room.");
+                        System.out.println("It seems to be closed...");
+                        System.out.println("");
+                        System.out.println("What you are going to do?");
+
+                        int userSelected7;
+
+                        do { // we went to right, there's some other story
+                            System.out.println("1 - Try to open door");
+                            System.out.println("2 - Open inventory");
+
+                            userSelected7 = sc.nextInt();
+
+                            System.out.println("Nothing happened...");
+                        } while (userSelected7 != 2);
+
+                        String query = "SELECT * FROM inventory WHERE item_status = 'True';"; // using queries again
+                        statement = connection.createStatement();
+                        rs = statement.executeQuery(query);
+
+                        while (rs.next()) {
+                            System.out.print(rs.getInt(1));
+                            System.out.print(" ");
+                            System.out.print(rs.getString(2));
+                            System.out.println(" ");
+                        }
+
+                        int userSelected8;
+
+                        do {
+                            System.out.println("What item you want to use? (TYPE ID)");
+                            userSelected8 = sc.nextInt();
+
+                            if (userSelected != 3) {
+                                System.out.println("And what you're going to do with it?");
+                            }
+                        } while (userSelected8 != 3);
+
+                        System.out.println("You opened the door.");
+                        System.out.println("You see a puzzle on the wall.");
+                        System.out.println("It looks like you need to answer it.");
+
+                        System.out.println("");
+                        System.out.println("2+2?");
+
+                        int userSelected9 = sc.nextInt();
+
+                        if (userSelected9 == 4) {
+                            System.out.println("The wall went up. You see a long corridor.");
+                            System.out.println("Going further you find a sword. Raise it?");
+                            System.out.println("");
+                            System.out.println("1 - Yes");
+                            System.out.println("2 - No");
+
+                            int userSelected10 = sc.nextInt();
+                            int weapon2 = 0;
+
+                            if (userSelected10 == 1) {
+                                String query2 = "UPDATE inventory SET item_status = 'True' where item_name = 'Sword'";
+                                weapon2 = 1;
+
+                                statement = connection.createStatement();
+                                statement.executeUpdate(query2);
+                                System.out.println("");
+                                ws.information();
+                            }
+                            else if (userSelected10 == 2) {
+                                weapon2 = 2;
+                            }
+
+                            System.out.println("Raising a sword, a goblin attacks you. You start the battle!");
+
+                            if (weapon2 == 2) {
+                                System.out.println("You have no weapon, so actually you have no chance.");
+                                System.out.println("");
+                                System.out.println("You died. GAME OVER!");
+
+                                String query2 = "UPDATE inventory SET item_status = 'False' where item_name = 'Sword'";
+
+                                statement = connection.createStatement();
+                                statement.executeUpdate(query2);
+
+                                System.exit(0);
+                            }
+                            else if (weapon2 == 1) {
+                                do {
+                                    System.out.println("What you want to do?");
+
+                                    System.out.println("1 - Attack");
+                                    System.out.println("2 - Open inventory");
+
+                                    int userSelected5 = sc.nextInt();
+
+                                    if (userSelected5 == 1) {
+                                        System.out.println("You attacked goblin with your sword.");
+                                        System.out.println("You dealt 100 damage to goblin.");
+                                        fg.goblin -= 100;
+                                        System.out.println("");
+                                        System.out.println("Goblin attacks back.");
+                                        fg.mc2 -= fg.goblinDamage;
+                                    }
+                                    else if (userSelected5 == 2) {
+                                        System.out.println("Choose which item you want to use (TYPE ID).");
+
+                                        String query3 = "SELECT * FROM inventory WHERE item_status = 'True';";
+                                        statement = connection.createStatement();
+                                        rs = statement.executeQuery(query3);
+
+                                        while (rs.next()) {
+                                            System.out.print(rs.getInt(1));
+                                            System.out.print(" ");
+                                            System.out.print(rs.getString(2));
+                                            System.out.println(" ");
+                                        }
+
+                                        int userSelected6 = sc.nextInt();
+
+                                        if (userSelected6 == 1) {
+                                            System.out.println("Still a blank sheet of paper.");
+                                            System.out.println("");
+                                            System.out.println("Goblin attacks.");
+                                            fg.mc2 -= fg.goblinDamage;
+                                        }
+                                        else if (userSelected6 == 2) {
+                                            System.out.println("You used some strange potion.");
+                                            System.out.println("It healed you for 100 HP.");
+                                            fg.mc2 += 200;
+                                            System.out.println("");
+                                            System.out.println("Goblin attacks.");
+                                            fg.mc2 -= fg.goblinDamage;
+                                        }
+                                        else if (userSelected6 == 3) {
+                                            System.out.println("Key.");
+                                            System.out.println("Nothing happened.");
+                                            System.out.println("");
+                                            System.out.println("Goblin attacks.");
+                                            fg.mc2 -= fg.goblinDamage;
+                                        }
+                                        else if (userSelected6 == 5) {
+                                            System.out.println("It is knife that you found.");
+                                            System.out.println("You can attack with it.");
+                                            System.out.println("But not from inventory.");
+                                            System.out.println("");
+                                            System.out.println("Goblin attacks.");
+                                            fg.mc2 -= fg.goblinDamage;
+                                        }
+                                    }
+                                } while (fg.goblin != 0);
+
+                                    System.out.println("");
+                                    System.out.println("After killing the goblin, you went further along the corridor and found a way out of the cave.");
+                                    System.out.println("Congratulations, you've completed the game!");
+
+                                PreparedStatement prst3 = connection.prepareStatement("UPDATE player_scoreboard SET player_result = 'Yes' where player_username = ?");
+                                prst3.setString(1, name);
+                                prst3.executeUpdate();
+
+                                String query2 = "UPDATE inventory SET item_status = 'False' where item_name = 'Sword'";
+
+                                statement = connection.createStatement();
+                                statement.executeUpdate(query2);
+                            }
+                        } else {
+                            System.out.println("");
+                            System.out.println("No.");
+                            System.out.println("You died! GAME OVER!");
+
+                            String query2 = "UPDATE inventory SET item_status = 'False' where item_name = 'Sword'";
+
+                            statement = connection.createStatement();
+                            statement.executeUpdate(query2);
+
+                            System.exit(0);
+                        }
+                    }
+                }
+            }
+            while (userSelected > 2);
+
+            statement.close();
+            connection.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
