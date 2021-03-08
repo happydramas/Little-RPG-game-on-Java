@@ -1,0 +1,32 @@
+package com.company;
+
+public class FightGoblin {
+    static int mc2, goblin;
+
+    int goblinDamage;
+
+    public int getMc2() {
+        return mc2;
+    }
+    public void setMc(int mc2) {
+        this.mc2 = mc2;
+    }
+
+    public int getGoblin() { return goblin; }
+    public void setMonster(int goblin) {
+        this.goblin = goblin;
+    }
+
+    public int getMonsterDamage() {
+        return goblinDamage;
+    }
+    public void setMonsterDamage(int goblinDamage) {
+        this.goblinDamage = goblinDamage;
+    }
+
+    public FightGoblin(int mc2, int goblin, int goblinDamage) {
+        setMc(mc2);
+        setMonster(goblin);
+        setMonsterDamage(goblinDamage);
+    }
+}
