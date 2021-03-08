@@ -13,20 +13,20 @@ public class FightGoblin {
     }
 
     public int getGoblin() { return goblin; }
-    public void setMonster(int goblin) {
+    public void setGoblin(int goblin) {
         this.goblin = goblin;
     }
 
-    public int getMonsterDamage() {
+    public int getGoblinDamage() {
         return goblinDamage;
     }
-    public void setMonsterDamage(int goblinDamage) {
+    public void setGoblinDamage(int goblinDamage) {
         this.goblinDamage = goblinDamage;
     }
 
     public FightGoblin(int mc2, int goblin, int goblinDamage) {
         setMc(mc2);
-        setMonster(goblin);
-        setMonsterDamage(goblinDamage);
+        setGoblin(goblin);
+        setGoblinDamage(goblinDamage);
     }
 }
