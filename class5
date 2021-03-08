@@ -1,0 +1,11 @@
+package com.company;
+
+public class WeaponSword extends Weapon {
+    public WeaponSword (int weaponDamage, String weaponStatus) {
+        super(weaponDamage, weaponStatus);
+    }
+
+    public void information() {
+        System.out.println("Looks like really powerful sword.");
+    }
+}
